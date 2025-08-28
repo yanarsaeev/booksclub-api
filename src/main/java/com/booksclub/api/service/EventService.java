@@ -1,7 +1,7 @@
 package com.booksclub.api.service;
 
 import com.booksclub.api.entities.Event;
-import com.booksclub.api.exception.EventNotFoundException;
+import com.booksclub.api.exception.ElementNotFoundException;
 import com.booksclub.api.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class EventService {
 
     public Event findById(Long eventId) {
         return eventRepository.findById(eventId).orElseThrow(
-                () -> new EventNotFoundException("Event with id %s not found".formatted(eventId)));
+                () -> new ElementNotFoundException("Event with id %s not found".formatted(eventId)));
     }
 
     @Transactional
@@ -47,7 +47,7 @@ public class EventService {
                     event.setDescription(description);
                     event.setPlannedAt(plannedAt);
                 }, () -> {
-                    throw new EventNotFoundException("Event with id %s not found".formatted(eventId));
+                    throw new ElementNotFoundException("Event with id %s not found".formatted(eventId));
                 });
     }
 
