@@ -1,6 +1,6 @@
 package com.booksclub.api.dto;
 
-import com.booksclub.api.entities.User;
+import com.booksclub.api.entities.Person;
 import lombok.Data;
 
 @Data
@@ -9,5 +9,5 @@ public class PostDto {
 
     private String description;
 
-    private User author;
+    private Person author;
 }

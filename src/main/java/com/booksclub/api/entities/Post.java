@@ -25,6 +25,6 @@ public class Post {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User author;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Person author;
 }
