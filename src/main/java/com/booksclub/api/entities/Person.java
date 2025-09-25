@@ -2,10 +2,7 @@ package com.booksclub.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
@@ -14,12 +11,14 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@Getter
 @Table(name = "users")
-public class User {
+public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "first_name")
     private String first_name;
@@ -27,12 +26,17 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    private String email;
+
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
-    @JsonIgnore
-    private Role role;
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    private Set<Role> roles;
 
     @ManyToMany
     @JoinTable(name = "users_event",
@@ -40,6 +44,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"))
     private Set<Event> events;
 
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
     private Set<Post> posts;
 }
