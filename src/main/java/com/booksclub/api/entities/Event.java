@@ -31,7 +31,7 @@ public class Event {
     @JoinTable(name = "users_event",
             joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-    private Set<User> managers;
+    private Set<Person> managers;
 
     @Column(name = "planned_at")
     private LocalDateTime plannedAt;
