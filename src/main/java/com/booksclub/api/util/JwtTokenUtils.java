@@ -44,8 +44,8 @@ public class JwtTokenUtils {
         return getAllClaimsFromToken(token).getSubject();
     }
 
-    public Set<String> getRoles(String token) {
-        return getAllClaimsFromToken(token).get("roles", Set.class);
+    public  List<String> getRoles(String token) {
+        return getAllClaimsFromToken(token).get("roles", List.class);
     }
 
     private Claims getAllClaimsFromToken(String token) {
