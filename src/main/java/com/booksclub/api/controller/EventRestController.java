@@ -10,13 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/events")
+@RequestMapping("/api/events")
 public class EventRestController {
 
     private final EventService eventService;
@@ -31,21 +33,28 @@ public class EventRestController {
 
     @GetMapping("/{eventId}")
     public EventDto get(@PathVariable("eventId") Long eventId) {
-        return convertToEventDto(eventService.findById(eventId));
+        return convertToEventDto(this.eventService.findById(eventId));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody @Valid EventDto eventDto, BindingResult bindingResult) {
+    public ResponseEntity<?> create(@RequestBody @Valid EventDto eventDto, BindingResult bindingResult,
+                                    UriComponentsBuilder uriComponentsBuilder)
+            throws BindException {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(
-                    bindingResult.getFieldErrors().stream()
-                            .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                            .collect(Collectors.toList())
-            );
+            if (bindingResult instanceof BindException exception) {
+                throw exception;
+            } else {
+                throw new BindException(bindingResult);
+            }
+        } else {
+            Event savedEvent = convertToEvent(eventDto);
+            eventService.save(savedEvent);
+            return ResponseEntity
+                    .created(uriComponentsBuilder
+                        .replacePath("/api/events/{eventId}")
+                        .build(Map.of("eventId", savedEvent.getId())))
+                    .body(savedEvent);
         }
-
-        eventService.save(convertToEvent(eventDto));
-        return ResponseEntity.ok("Ok");
     }
 
     @PatchMapping("/{eventId}")
