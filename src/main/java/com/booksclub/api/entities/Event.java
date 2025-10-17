@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "event")
+@Table(name = "events")
 public class Event {
 
     @Id
