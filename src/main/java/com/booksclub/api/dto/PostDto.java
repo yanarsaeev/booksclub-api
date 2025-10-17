@@ -1,13 +1,14 @@
 package com.booksclub.api.dto;
 
-import com.booksclub.api.entities.Person;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class PostDto {
+    private Long id;
     private String title;
-
     private String description;
-
-    private Person author;
+    private LocalDateTime createdAt;
+    private PersonDto author;
 }
