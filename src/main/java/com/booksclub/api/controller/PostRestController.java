@@ -1,5 +1,6 @@
 package com.booksclub.api.controller;
 
+import com.booksclub.api.dto.PersonDto;
 import com.booksclub.api.dto.PostDto;
 import com.booksclub.api.entities.Post;
 import com.booksclub.api.service.PostService;
@@ -14,7 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,12 +23,14 @@ public class PostRestController {
 
     private final PostService postService;
 
+    private final PersonRestController personRestController;
+
     private final ModelMapper modelMapper;
 
     @GetMapping("/posts")
     public List<PostDto> getAll() {
-        return this.postService.findAll().stream().map(this::convertToPostDto)
-                .collect(Collectors.toList());
+        List<Post> postList = this.postService.findAll();
+        return postList.stream().map(this::convertToPostDto).toList();
     }
 
     @GetMapping("/posts/{postId}")
@@ -47,8 +49,7 @@ public class PostRestController {
                 throw new BindException(bindingResult);
             }
         } else {
-            Post savedPost = convertToPost(postDto);
-            this.postService.save(savedPost);
+            Post savedPost = this.postService.save(postDto);
             return ResponseEntity
                     .created(uriComponentsBuilder
                             .replacePath("/api/posts/{postId}")
@@ -60,7 +61,7 @@ public class PostRestController {
     @PatchMapping("/posts/{postId}")
     public ResponseEntity<?> update(@PathVariable("postId") Long postId,
                                     @RequestBody @Valid PostDto postDto,
-                                    BindingResult bindingResult) throws BindException {
+                                    BindingResult bindingResult, UriComponentsBuilder uriComponentsBuilder) throws BindException {
         if (bindingResult.hasErrors()) {
             if (bindingResult instanceof BindException exception) {
                 throw exception;
@@ -69,24 +70,25 @@ public class PostRestController {
             }
         } else {
             this.postService.update(postId, postDto.getTitle(), postDto.getDescription());
-            return ResponseEntity.noContent()
-                    .build();
+            return ResponseEntity
+                    .created(uriComponentsBuilder
+                            .replacePath("/api/events/{eventId}")
+                            .build(Map.of("eventId", postId)))
+                    .body(convertToPostDto(this.postService.findById(postId)));
         }
     }
 
     @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<Void> delete(@PathVariable("postId") Long postId) {
+    public ResponseEntity<?> delete(@PathVariable("postId") Long postId) {
         this.postService.delete(postId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Post deleted");
     }
 
-//    @GetMapping("/users/{userId}/posts")
-//    public ResponseEntity<List<PostDto>> getPostsByUser(@PathVariable("userId") Long userId) {
-//        if ()
-//    }
-
     private PostDto convertToPostDto(Post post) {
-        return modelMapper.map(post, PostDto.class);
+        PersonDto personDto = this.personRestController.convertToPersonDto(post.getAuthor());
+        PostDto postDto = modelMapper.map(post, PostDto.class);
+        postDto.setAuthor(personDto);
+        return postDto;
     }
 
     private Post convertToPost(PostDto postDto) {
