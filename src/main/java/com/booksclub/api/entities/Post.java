@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Builder
@@ -30,4 +31,18 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Person author;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return Objects.equals(id, post.id)
+                && Objects.equals(title, post.title) && Objects.equals(description, post.description)
+                && Objects.equals(createdAt, post.createdAt) && Objects.equals(author, post.author);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, description, createdAt, author);
+    }
 }

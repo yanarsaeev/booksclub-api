@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.Objects;
 
 @Entity
 @Builder
@@ -27,11 +27,9 @@ public class Event {
     @Size(max = 300, message = "The length cannot be more than 300 characters.")
     private String description;
 
-    @ManyToMany
-    @JoinTable(name = "users_event",
-            joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-    private Set<Person> managers;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(name = "users_id")
+    private Person manager;
 
     @Column(name = "planned_at")
     private LocalDateTime plannedAt;
@@ -42,4 +40,18 @@ public class Event {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(id, event.id) && Objects.equals(name, event.name)
+                && Objects.equals(description, event.description) && Objects.equals(manager, event.manager)
+                && Objects.equals(plannedAt, event.plannedAt) && Objects.equals(createdAt, event.createdAt)
+                && Objects.equals(updatedAt, event.updatedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, manager, plannedAt, createdAt, updatedAt);
+    }
 }

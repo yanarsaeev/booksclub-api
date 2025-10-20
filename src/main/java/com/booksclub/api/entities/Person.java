@@ -3,9 +3,9 @@ package com.booksclub.api.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
 import java.util.Set;
 
-@Data
 @Entity
 @Builder
 @NoArgsConstructor
@@ -39,12 +39,24 @@ public class Person {
     )
     private Set<Role> roles;
 
-    @ManyToMany
-    @JoinTable(name = "users_event",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"))
+    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
     private Set<Event> events;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private Set<Post> posts;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals(id, person.id) && Objects.equals(first_name, person.first_name)
+                && Objects.equals(lastName, person.lastName) && Objects.equals(email, person.email)
+                && Objects.equals(password, person.password) && Objects.equals(roles, person.roles)
+                && Objects.equals(events, person.events) && Objects.equals(posts, person.posts);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, first_name, lastName, email, password, roles, events, posts);
+    }
 }
