@@ -1,6 +1,7 @@
 package com.booksclub.api.controller;
 
 import com.booksclub.api.dto.EventDto;
+import com.booksclub.api.dto.PersonDto;
 import com.booksclub.api.entities.Event;
 import com.booksclub.api.service.EventService;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class EventRestController {
 
     private final EventService eventService;
-
+    private final PersonRestController personRestController;
     private final ModelMapper modelMapper;
 
     @GetMapping
@@ -47,8 +48,7 @@ public class EventRestController {
                 throw new BindException(bindingResult);
             }
         } else {
-            Event savedEvent = convertToEvent(eventDto);
-            eventService.save(savedEvent);
+            Event savedEvent = eventService.save(eventDto);
             return ResponseEntity
                     .created(uriComponentsBuilder
                         .replacePath("/api/events/{eventId}")
@@ -81,10 +81,9 @@ public class EventRestController {
     }
 
     private EventDto convertToEventDto(Event event) {
-        return modelMapper.map(event, EventDto.class);
-    }
-
-    private Event convertToEvent(EventDto eventDto) {
-        return modelMapper.map(eventDto, Event.class);
+        PersonDto personDto = this.personRestController.convertToPersonDto(event.getManager());
+        EventDto eventDto = modelMapper.map(event, EventDto.class);;
+        eventDto.setManager(personDto);
+        return eventDto;
     }
 }
