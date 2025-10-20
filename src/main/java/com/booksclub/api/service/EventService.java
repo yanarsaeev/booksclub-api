@@ -1,9 +1,15 @@
 package com.booksclub.api.service;
 
+import com.booksclub.api.dto.EventDto;
 import com.booksclub.api.entities.Event;
+import com.booksclub.api.entities.Person;
 import com.booksclub.api.exception.NotFoundException;
 import com.booksclub.api.repository.EventRepository;
+import com.booksclub.api.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +21,7 @@ import java.util.List;
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final PersonRepository personRepository;
 
     public List<Event> findAll() {
         return this.eventRepository.findAll();
@@ -26,16 +33,30 @@ public class EventService {
     }
 
     @Transactional
-    public void save(Event event) {
-        if (event.getPlannedAt() == null) {
-            event.setPlannedAt(LocalDateTime.now());
-        }
+    public Event save(EventDto eventDto) {
+        Event event = new Event();
+        event.setName(eventDto.getName());
+        event.setDescription(event.getDescription());
+        event.setPlannedAt(eventDto.getPlannedAt());
+        event.setCreatedAt(LocalDateTime.now());
+        event.setUpdatedAt(LocalDateTime.now());
 
-        eventRepository.saveAndFlush(enrichEvent(event));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Person person = personRepository.findPersonByEmail(auth.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        event.setManager(person);
+        person.getEvents().add(event);
+
+        return eventRepository.save(event);
     }
 
     @Transactional
     public void delete(Long eventId) {
+        if (this.eventRepository.findById(eventId).isEmpty()) {
+            throw new NotFoundException("Event with id %s not found".formatted(eventId));
+        }
+
         this.eventRepository.deleteById(eventId);
     }
 
@@ -49,12 +70,5 @@ public class EventService {
                 }, () -> {
                     throw new NotFoundException("Event with id %s not found".formatted(eventId));
                 });
-    }
-
-    private Event enrichEvent(Event event) {
-        event.setCreatedAt(LocalDateTime.now());
-        event.setUpdatedAt(LocalDateTime.now());
-
-        return event;
     }
 }
