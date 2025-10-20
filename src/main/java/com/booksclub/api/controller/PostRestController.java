@@ -61,7 +61,8 @@ public class PostRestController {
     @PatchMapping("/posts/{postId}")
     public ResponseEntity<?> update(@PathVariable("postId") Long postId,
                                     @RequestBody @Valid PostDto postDto,
-                                    BindingResult bindingResult, UriComponentsBuilder uriComponentsBuilder) throws BindException {
+                                    BindingResult bindingResult, UriComponentsBuilder uriComponentsBuilder)
+            throws BindException {
         if (bindingResult.hasErrors()) {
             if (bindingResult instanceof BindException exception) {
                 throw exception;
@@ -89,9 +90,5 @@ public class PostRestController {
         PostDto postDto = modelMapper.map(post, PostDto.class);
         postDto.setAuthor(personDto);
         return postDto;
-    }
-
-    private Post convertToPost(PostDto postDto) {
-        return modelMapper.map(postDto, Post.class);
     }
 }
