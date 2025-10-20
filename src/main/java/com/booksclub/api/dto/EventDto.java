@@ -15,4 +15,6 @@ public class EventDto {
     private String description;
 
     private LocalDateTime plannedAt;
+
+    private PersonDto manager;
 }
