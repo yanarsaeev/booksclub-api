@@ -46,7 +46,6 @@ public class EventService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         event.setManager(person);
-        person.getEvents().add(event);
 
         return eventRepository.save(event);
     }

@@ -6,7 +6,7 @@ COPY src /build/src
 COPY target /build/target
 RUN mvn package -DskipTests
 
-FROM openjdk:22
+FROM openjdk:22-jdk
 ARG JAR_FILE=/build/target/*.jar
 COPY --from=build $JAR_FILE /opt/booksclub/app.jar
 ENTRYPOINT ["java", "-jar", "/opt/booksclub/app.jar"]

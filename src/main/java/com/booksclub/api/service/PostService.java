@@ -50,7 +50,6 @@ public class PostService {
         Person person = personRepository.findPersonByEmail(auth.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         savedPost.setAuthor(person);
-        person.getPosts().add(savedPost);
         savedPost.setCreatedAt(LocalDateTime.now());
 
         return this.postRepository.save(savedPost);
