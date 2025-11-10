@@ -82,7 +82,7 @@ public class EventRestController {
 
     private EventDto convertToEventDto(Event event) {
         PersonDto personDto = this.personRestController.convertToPersonDto(event.getManager());
-        EventDto eventDto = modelMapper.map(event, EventDto.class);;
+        EventDto eventDto = modelMapper.map(event, EventDto.class);
         eventDto.setManager(personDto);
         return eventDto;
     }

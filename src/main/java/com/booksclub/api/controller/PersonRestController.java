@@ -17,8 +17,4 @@ public class PersonRestController {
     public PersonDto convertToPersonDto(Person person) {
         return modelMapper.map(person, PersonDto.class);
     }
-
-    private Person convertToPerson(PersonDto personDto) {
-        return modelMapper.map(personDto, Person.class);
-    }
 }

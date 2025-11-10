@@ -39,24 +39,17 @@ public class Person {
     )
     private Set<Role> roles;
 
-    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
-    private Set<Event> events;
-
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-    private Set<Post> posts;
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
         return Objects.equals(id, person.id) && Objects.equals(first_name, person.first_name)
                 && Objects.equals(lastName, person.lastName) && Objects.equals(email, person.email)
-                && Objects.equals(password, person.password) && Objects.equals(roles, person.roles)
-                && Objects.equals(events, person.events) && Objects.equals(posts, person.posts);
+                && Objects.equals(password, person.password) && Objects.equals(roles, person.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, first_name, lastName, email, password, roles, events, posts);
+        return Objects.hash(id, first_name, lastName, email, password, roles);
     }
 }

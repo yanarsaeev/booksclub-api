@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -28,8 +29,16 @@ public class Event {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "users_id")
+    @JoinColumn(name = "user_id")
     private Person manager;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_events",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id")
+    )
+    private List<Person> participants;
 
     @Column(name = "planned_at")
     private LocalDateTime plannedAt;
