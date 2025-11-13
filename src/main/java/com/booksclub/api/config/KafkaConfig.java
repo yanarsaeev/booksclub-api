@@ -1,6 +1,6 @@
 package com.booksclub.api.config;
 
-import com.booksclub.api.entities.PersonCreatedEvent;
+import com.booksclub.core.PersonCreatedEvent;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
